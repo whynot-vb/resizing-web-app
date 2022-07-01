@@ -2,9 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const multer = require("multer");
-const generateUploadURL = require("./s3.js");
 
-const { uploadFile } = require("./s3.js");
+const { uploadFile, getFileStream } = require("./s3");
 const app = express();
 const port = 5000;
 
@@ -22,6 +21,7 @@ const storage = multer.diskStorage({
     );
   },
 });
+
 const multi_upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
@@ -40,9 +40,20 @@ const multi_upload = multer({
   },
 }).array("uploadImages", 10);
 
+app.get("/api/upload/:key", async (req, res) => {
+  console.log(req.params);
+  // const key = req.params.key;
+  // const readStream = getFileStream(key);
+
+  // readStream.pipe(res);
+});
+
 app.post("/api/upload", async (req, res) => {
-  multi_upload(req, res, function (err) {
+  multi_upload(req, res, async function (err) {
     console.log(req.files);
+    req.files.forEach(async (file) => {
+      await uploadFile(file);
+    });
 
     //multer error
     if (err instanceof multer.MulterError) {
@@ -71,11 +82,6 @@ app.post("/api/upload", async (req, res) => {
     }
     res.status(200).send("file uploaded");
   });
-});
-
-app.get("/s3", async (req, res) => {
-  const url = await generateUploadURL();
-  res.send({ url });
 });
 
 app.listen(port, () =>

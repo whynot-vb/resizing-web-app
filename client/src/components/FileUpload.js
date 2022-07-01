@@ -14,18 +14,6 @@ const FileUpload = () => {
   const onChange = (e) => {
     console.log(e.target.files);
     setFiles(e.target.files);
-
-    // if (e.target.files) {
-    //   const filesArray = Array.from(e.target.files).map((file) =>
-    //     URL.createObjectURL(file)
-    //   );
-
-    //   // setSelectedFiles((prevImages) => prevImages.concat(filesArray));
-    //   setSelectedFiles(filesArray);
-    //   Array.from(e.target.files).map(
-    //     (file) => URL.revokeObjectURL(file) // avoid memory leak
-    //   );
-    // }
   };
 
   const onSubmit = async (e) => {
@@ -65,7 +53,7 @@ const FileUpload = () => {
     return source.map((photo) => {
       return (
         <>
-          <img src={photo} key={photo} width="90%" height="90%" alt="pho" />
+          <img src={photo} key={photo} width="100%" height="100%" alt="pho" />
           <ButtonGroup
             size="large"
             variant="contained"
