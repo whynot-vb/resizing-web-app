@@ -4,6 +4,7 @@ import {
   RESIZE_PROCESS_STARTED,
   RESIZE_PROCESS_OK,
   RESIZE_PROCESS_FAILED,
+  ADD_PHOTO,
 } from "../actionCreators/photos";
 
 const initialState = {
@@ -55,6 +56,18 @@ export default function photoReducer(state = initialState, action) {
         isResizing: false,
         alertType: "error",
         alertText: "Unable to process image resizing request",
+      };
+    }
+    case ADD_PHOTO: {
+      return {
+        ...state,
+        photos: [
+          ...state.photos,
+          {
+            url: action.payload.url,
+            size: action.payload.size,
+          },
+        ],
       };
     }
     default: {

@@ -3,67 +3,27 @@ import React, { Fragment, useState } from "react";
 
 import Image from "./Image";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000",
-});
-
 const FileUpload = () => {
   const [files, setFiles] = useState([]);
-  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const onChange = (e) => {
     setFiles(e.target.files);
-  };
-
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    // const formData = new FormData();
-    // Object.values(files).forEach((file) => {
-    //   formData.append("uploadImages", file);
-    // });
-    // console.log(files);
-
-    const filesArray = Array.from(files).map((file) =>
-      URL.createObjectURL(file)
-    );
-    console.log(filesArray);
-
-    setSelectedFiles(filesArray);
-    Array.from(files).map(
-      (file) => URL.revokeObjectURL(file) // avoid memory leak
-    );
-
-    console.log(selectedFiles);
-
-    // try {
-    //   const res = await API.post("/api/upload", formData, {
-    //     headers: {
-    //       "Content-Type": "multipart/form-data",
-    //     },
-    //   });
-    //   console.log(res);
-    // } catch (err) {
-    //   if (err.response.status === 500) {
-    //     console.log(err);
-    //   } else {
-    //     console.log(err.response.data.msg);
-    //   }
-    // }
+    console.log(e.target.files);
   };
 
   return (
     <Fragment>
-      <form onSubmit={onSubmit}>
+      <form>
         <div>
           <input
+            style={{ display: "block", margin: "0 auto" }}
             type="file"
             id="file"
-            name="uploadImages"
+            name="Upload images"
             multiple
             onChange={onChange}
           />
         </div>
-        <input type="submit" value="Upload" />
       </form>
       <div
         style={{
@@ -75,8 +35,14 @@ const FileUpload = () => {
           alignItems: "center",
         }}
       >
-        {selectedFiles?.map((photo) => {
-          return <Image key={photo} photo={photo} />;
+        {Array.from(files).map((file) => {
+          return (
+            <Image
+              key={URL.createObjectURL(file)}
+              file={file}
+              photo={URL.createObjectURL(file)}
+            />
+          );
         })}
       </div>
     </Fragment>

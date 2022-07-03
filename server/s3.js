@@ -1,28 +1,38 @@
-import dotenv from "dotenv";
-import S3 from "aws-sdk/clients/s3.js";
+import aws from "aws-sdk";
 import fs from "fs";
+import dotenv from "dotenv";
 dotenv.config();
 
-const bucketName = process.env.AWS_BUCKET_NAME;
-const region = process.env.AWS_BUCKET_REGION;
-const accessKeyId = process.env.AWS_ACCESS_KEY;
-const secretAccessKey = process.env.AWS_SECRET_KEY;
+const s3 = new aws.S3();
 
-const s3 = new S3({
-  region,
-  accessKeyId,
-  secretAccessKey,
+aws.config.setPromisesDependency();
+aws.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: "us-east-1",
 });
 
-//upload a file to s3
 export const uploadFile = (file) => {
-  const fileStream = fs.createReadStream(file.path);
+  try {
+    const fileStream = fs.createReadStream(file.path);
 
-  const uploadParams = {
-    Bucket: bucketName,
-    Body: fileStream,
-    Key: file.filename,
+    const uploadParams = {
+      Bucket: "im-homework",
+      Body: fileStream,
+      Key: file.filename,
+    };
+
+    return s3.upload(uploadParams).promise();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getFileStream = (fileKey) => {
+  const downloadParams = {
+    Key: fileKey,
+    Bucket: "im-homework",
   };
 
-  return s3.upload(uploadParams).promise();
+  return s3.getObject(downloadParams).createReadStream();
 };
